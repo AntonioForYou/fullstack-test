@@ -84,16 +84,20 @@
 
 ## Запуск проекта
 
-### Обычный запуск (повседневная работа)
-
-Чтобы запустить проект, **достаточно выполнить команду**:
+Для запуска проекта достаточно выполнить команду:
 
 ```bash
 docker compose up -d
 ```
 
-После этого приложение сразу готово к работе:
-- **Веб-приложение:** [http://localhost:8088](http://localhost:8088) (автоматически откроется страница входа)
+> [!NOTE]
+> При запуске контейнер автоматически:
+> 1. Установит зависимости Composer (`composer install`), если они ещё не установлены;
+> 2. Дождётся готовности MySQL и применит все миграции базы данных (`php spark migrate --all`);
+> 3. Заполнит базу данных демонстрационным данными (`UserSeeder`, `CommentSeeder`) при первом старте.
+
+После запуска приложение готово к работе:
+- **Веб-приложение:** [http://localhost:8088](http://localhost:8088) (страница авторизации)
 - **Панель БД (Adminer):** [http://localhost:8080](http://localhost:8080)
 - **Демо-доступ:** `user@example.com` / `User#Pass2026!`
 
@@ -102,29 +106,6 @@ docker compose up -d
 docker compose down
 ```
 *(Все данные базы данных сохраняются в папке `db_data`).*
-
----
-
-### Первоначальная инициализация
-
-Если проект разворачивается впервые (после `git clone`):
-
-1. **Запустить контейнеры:**
-   ```bash
-   docker compose up -d
-   ```
-
-2. **Установить зависимости Composer (если отсутствует папка `vendor`):**
-   ```bash
-   docker compose exec -u devuser web composer install
-   ```
-
-3. **Применить миграции и сидеры:**
-   ```bash
-   docker compose exec -u devuser web php spark migrate
-   docker compose exec -u devuser web php spark db:seed UserSeeder
-   docker compose exec -u devuser web php spark db:seed CommentSeeder
-   ```
 
 ### Запуск тестов
 

@@ -47,16 +47,8 @@ abstract class BaseController extends Controller
         // Do Not Edit This Line
         parent::initController($request, $response, $logger);
 
-        // Автоматическая самодиагностика: если таблицы еще не созданы в БД, накатываем миграции и сиды
-        try {
-            $db = \Config\Database::connect();
-            if (! $db->tableExists('users') || ! $db->tableExists('comments')) {
-                \Config\Services::migrations()->latest();
-                \Config\Database::seeder()->call('App\Database\Seeds\UserSeeder');
-                \Config\Database::seeder()->call('App\Database\Seeds\CommentSeeder');
-            }
-        } catch (\Throwable) {
-            // Игнорируем ошибки подключения при ранней инициализации
-        }
+        // Preload any models, libraries, etc, here.
+
+        // E.g.: $this->session = \Config\Services::session();
     }
 }
