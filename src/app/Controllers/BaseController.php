@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controllers;
 
 use CodeIgniter\Controller;
@@ -38,21 +40,23 @@ abstract class BaseController extends Controller
     protected $helpers = [];
 
     /**
-     * Be sure to declare properties for any property fetch you initialized.
-     * The creation of dynamic property is deprecated in PHP 8.2.
-     */
-    // protected $session;
-
-    /**
      * @return void
      */
-    public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
+    public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger): void
     {
         // Do Not Edit This Line
         parent::initController($request, $response, $logger);
 
-        // Preload any models, libraries, etc, here.
-
-        // E.g.: $this->session = \Config\Services::session();
+        // Автоматическая самодиагностика: если таблицы еще не созданы в БД, накатываем миграции и сиды
+        try {
+            $db = \Config\Database::connect();
+            if (! $db->tableExists('users') || ! $db->tableExists('comments')) {
+                \Config\Services::migrations()->latest();
+                \Config\Database::seeder()->call('App\Database\Seeds\UserSeeder');
+                \Config\Database::seeder()->call('App\Database\Seeds\CommentSeeder');
+            }
+        } catch (\Throwable) {
+            // Игнорируем ошибки подключения при ранней инициализации
+        }
     }
 }
